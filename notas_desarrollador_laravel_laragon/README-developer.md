@@ -52,3 +52,8 @@
 - https://startbootstrap.com/template/sb-admin
 - https://getbootstrap.com/docs/5.2/getting-started/download/
 
+
+```batch
+gh auth login;
+gh create tutorial_laravel_crm_codigosdeprogramacion --public --source=. --remote=origin --push
+```
