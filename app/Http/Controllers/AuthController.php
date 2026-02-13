@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    // Creación de las funciones del Controller
     public function showLogin()
     {
         return view('auth.login');
