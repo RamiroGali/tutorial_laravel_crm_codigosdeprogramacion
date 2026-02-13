@@ -1,0 +1,5 @@
+echo crear modelo en el proyecto llamado User y haga la migración y el controller
+php artisan make:model User -m
+
+echo User ya existe como modelo, entonces solo se crea el controller
+php artisan make:controller AuthController

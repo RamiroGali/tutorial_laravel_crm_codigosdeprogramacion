@@ -1,0 +1,191 @@
+Guía rápida: Laragon + PHP 8.5 TS + Laravel + phpMyAdmin (Windows)
+Objetivo: Configurar un entorno local limpio con Laragon, PHP 8.5 Thread Safe, Laravel 10/11, y phpMyAdmin, evitando conflictos de puertos, PATH y DLLs.
+
+1) Requisitos
+
+Laragon (Apache + MySQL/MariaDB).
+PHP 8.5.x Thread Safe (TS) para Windows:
+
+Archivo: php-8.5.x-Win32-vs17-x64.zip
+
+
+Microsoft Visual C++ 2015–2022 Redistributable (x64) instalado.
+Permisos de Administrador para editar hosts, reiniciar servicios y escribir en C:\laragon.
+
+
+2) Instalar PHP 8.5.x TS en Laragon
+
+
+Descargar php-8.5.x-Win32-vs17-x64.zip (TS).
+
+
+Extraer y mover a:
+C:\laragon\bin\php\php-8.5.x-Win32-vs17-x64\
+
+
+
+Crear php.ini:
+
+Copiar php.ini-development → renombrar a php.ini.
+Editar y habilitar extensiones clave:
+INIextension=pdo_mysqlextension=mysqliextension=fileinfoextension=opensslextension=mbstringextension=zipextension=intlextension=curldate.timezone = America/BogotaMostrar más líneas
+
+Asegúrate de escribir America/Bogota (sin tilde) y guardar el archivo en UTF‑8 o ANSI.
+
+
+
+
+
+Seleccionar la versión en Laragon
+Abrir Laragon como admin → Menu → PHP → Version → php-8.5.x-Win32-vs17-x64.
+
+
+Verificar en terminal (desde Laragon → Menu → Terminal):
+PowerShellphp -vMostrar más líneas
+Debe mostrar PHP 8.5.x (ZTS/Thread Safety enabled).
+
+
+
+3) Ajustar PATH (para que php y composer usen 8.5.x)
+
+
+Método Laragon (recomendado):
+Menu → Preferences → System → [✓] Add Laragon to PATH, cierra y abre terminal (de Laragon).
+
+
+Comprobar:
+PowerShellwhere phpphp -vMostrar más líneas
+La primera ruta debe ser:
+C:\laragon\bin\php\php-8.5.x-Win32-vs17-x64\php.exe
+
+
+
+
+Si ves rutas de herd o winget antes, muévelas debajo en Variables de entorno → Path o elimínalas si no las usas.
+
+
+4) Configurar Apache (módulo PHP y DLLs)
+Archivo: C:\laragon\etc\apache2\mod_php.conf
+Contenido recomendado:
+Apache Config# This file is auto-generated, so please keep it intact.LoadFile "C:/laragon/bin/php/php-8.5.x-Win32-vs17-x64/libcrypto-3-x64.dll"LoadFile "C:/laragon/bin/php/php-8.5.x-Win32-vs17-x64/libssl-3-x64.dll"LoadModule php_module "C:/laragon/bin/php/php-8.5.x-Win32-vs17-x64/php8apache2_4.dll"PHPIniDir "C:/laragon/bin/php/php-8.5.x-Win32-vs17-x64"<IfModule mime_module>    AddType application/x-httpd-php .php</IfModule>Mostrar más líneas
+
+Alternativa: copiar libcrypto-3-x64.dll y libssl-3-x64.dll a
+C:\laragon\bin\apache\httpd-2.4.*\bin\ (funciona igual de bien).
+
+Incluir vhosts y apps en Apache:
+Archivo C:\laragon\bin\apache\httpd-2.4.*\conf\httpd.conf:
+Apache ConfigListen 80LoadModule vhost_alias_module modules/mod_vhost_alias.soLoadModule rewrite_module modules/mod_rewrite.soIncludeOptional "C:/laragon/etc/apache2/sites-enabled/*.conf"IncludeOptional "C:/laragon/etc/apps/*/conf/*.conf"Mostrar más líneas
+Validar sintaxis:
+PowerShell& "C:\laragon\bin\apache\httpd-2.4.*\bin\httpd.exe" -t# Debe devolver: Syntax OKMostrar más líneas
+
+5) Configurar puerto y virtual host
+
+
+En Laragon: Menu → Preferences → Services & Ports → Apache → Port: 80
+Reiniciar Laragon como admin.
+
+
+Virtual host generado automáticamente (Auto Virtual Hosts ON):
+C:\laragon\etc\apache2\sites-enabled\auto.tu_proyecto.test.conf
+Apache Config<VirtualHost *:80>     DocumentRoot "C:/laragon/www/tu_proyecto/public"    ServerName tu_proyecto.test    ServerAlias *.tu_proyecto.test    <Directory "C:/laragon/www/tu_proyecto/public">        AllowOverride All        Require all granted    </Directory></VirtualHost>Mostrar más líneas
+
+
+hosts (abrir como admin): C:\Windows\System32\drivers\etc\hosts
+127.0.0.1   tu_proyecto.test
+127.0.0.1   localhost
+
+
+
+Reiniciar Apache: Menu → Apache → Restart.
+
+
+Verificar puerto:
+PowerShellnetstat -aon | findstr LISTENING | findstr :80Mostrar más líneas
+
+
+
+6) phpMyAdmin
+
+URL típica:
+http://localhost/phpmyadmin
+
+
+Acceso por defecto con Laragon:
+Username: root
+Password: (vacía)
+
+
+Si sale “Forbidden”, revisar:
+C:\laragon\etc\apps\phpMyAdmin\conf\apache.conf
+Apache ConfigAlias /phpmyadmin "C:/laragon/etc/apps/phpMyAdmin"<Directory "C:/laragon/etc/apps/phpMyAdmin">    AllowOverride All    Require all granted</Directory>Mostrar más líneas
+
+
+
+7) Crear proyecto Laravel y conexión a BD
+Instalar/usar instalador o Composer:
+PowerShellcomposer global require laravel/installerlaravel new tu_proyecto# ocomposer create-project laravel/laravel tu_proyectoMostrar más líneas
+Configurar .env para MySQL de Laragon:
+Plain Textenv no es totalmente compatible. El resaltado de sintaxis se basa en Plain Text.DB_CONNECTION=mysqlDB_HOST=127.0.0.1DB_PORT=3306DB_DATABASE=nombre_de_tu_bdDB_USERNAME=rootDB_PASSWORD=``Mostrar más líneas
+Migraciones y limpieza:
+PowerShellcomposer updatephp artisan optimize:clearphp artisan migrate``Mostrar más líneas
+APP_URL:
+Plain Textenv no es totalmente compatible. El resaltado de sintaxis se basa en Plain Text.APP_URL=http://tu_proyecto.testMostrar más líneas
+
+8) Problemas comunes y soluciones rápidas
+A) Composer detected issues… require PHP >= 8.4/8.5…
+
+Solución: instalar PHP TS más reciente (8.5.x), seleccionarlo en Laragon, limpiar PATH y composer update.
+
+B) PHP activo en terminal es otro (NTS/antiguo)
+PowerShellwhere phpphp -vMostrar más líneas
+
+Poner Laragon PHP primero en PATH o usar terminal de Laragon.
+Forzar composer con ruta absoluta:
+PowerShell& "C:\laragon\bin\php\php-8.5.x-Win32-vs17-x64\php.exe" "C:\laragon\bin\composer\composer.phar" updateMostrar más líneas
+
+
+C) Apache no arranca / no escucha en :80
+
+Validar sintaxis:
+PowerShell& "C:\laragon\bin\apache\httpd-2.4.*\bin\httpd.exe" -tMostrar más líneas
+
+Revisar error.log:
+C:\laragon\bin\apache\httpd-2.4.*\logs\error.log
+
+
+DLLs faltantes: agregar LoadFile a libcrypto-3-x64.dll, libssl-3-x64.dll o copiarlas a bin de Apache.
+Ver si el puerto 80 está ocupado:
+PowerShellnetstat -aon | findstr :80Mostrar más líneas
+Detener IIS/W3SVC/WAS/otros en services.msc o cambiar a 8080 temporalmente (y ajustar <VirtualHost *:8080>).
+
+D) phpMyAdmin pide login
+
+Usuario por defecto de Laragon:
+root / (contraseña vacía)
+
+
+Si cambiaste: Menu → MySQL → Reset root password.
+
+E) Timezone inválido
+
+En php.ini usar:
+INIdate.timezone = America/BogotaMostrar más líneas
+(sin acento)
+
+
+9) Comandos útiles (referencia rápida)
+PowerShell# PHP activo y rutaphp -vwhere php# Composer (clear/update)composer clear-cachecomposer update# Laravelphp artisan optimize:clearphp artisan migrate# Apache: validar sintaxis& "C:\laragon\bin\apache\httpd-2.4.*\bin\httpd.exe" -t# Puertosnetstat -aon | findstr LISTENING | findstr :80netstat -aon | findstr :80Mostrar más líneas
+
+10) Verificación final
+
+http://localhost/ → home de Laragon/Apache
+http://localhost/phpmyadmin → phpMyAdmin OK (root / vacío)
+http://tu_proyecto.test → Laravel cargando (DocumentRoot /public)
+php -v → 8.5.x (ZTS), where php → Laragon primero
+
+
+Créditos rápidos
+
+Laragon: configuración simplificada de Apache/MySQL, auto vhosts .test.
+PHP for Windows (TS vs NTS): usar Thread Safe para Apache (mod_php).
+Visual C++ 2015–2022: necesario para builds VS17.

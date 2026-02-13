@@ -1,0 +1,23 @@
+echo Instalación global de Laravel
+composer global require laravel/installer
+echo se debe crear base de datos en phpmyadmin
+
+echo crear proyecto
+laravel new tutorial_laravel_crm_codigosdeprogramacion
+
+echo modificar el .env del proyecto
+echo DB_CONNECTION=mysql
+echo DB_HOST=127.0.0.1
+echo DB_PORT=3306
+echo DB_DATABASE=tutorial_laravel_crm_codigosdeprogramacion
+echo DB_USERNAME=root
+echo DB_PASSWORD=
+
+echo solucionar conflicto de versiones de php de laragon
+echo modificar el "php.ini-development" en "C:\laragon\bin\php\php-8.4.12-nts-Win32-vs17-x64"
+echo quitarles el ';' antes de los parámetros:
+echo extension=pdo_mysql
+echo extension=mysqli
+echo reiniciar laragon y en menu->php->versión actual->escoger la versión mas alta de php
+
+composer run dev
