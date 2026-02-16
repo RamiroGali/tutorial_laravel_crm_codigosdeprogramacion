@@ -9,7 +9,7 @@
     <meta name="author" content="" />
     <title>Login - CRM</title>
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
-    <link href="{{ asset('css/all.min.js') }}" rel="stylesheet" />
+    <link href="{{ asset('css/all.min.css') }}" rel="stylesheet" />
     <!-- <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script> -->
 </head>
 
@@ -26,6 +26,7 @@
                                 </div>
                                 <div class="card-body">
                                     <form action="{{ route('login') }}" method="post">
+                                        @csrf
                                         <div class="form-floating mb-3">
                                             <input class="form-control" id="email" name="email" type="email" placeholder="name@example.com" />
                                             <label for="email">Correo Electrónico</label>
@@ -34,6 +35,14 @@
                                             <input class="form-control" id="password" name="password" type="password" placeholder="Contraseña" />
                                             <label for="password">Contraseña</label>
                                         </div>
+                                        
+                                        <!-- Se recibió del servidor un mensaje de error sobre la autenticación del Usuario  -->
+                                        @if(session('error'))
+                                        <div class="alert alert-danger">
+                                            {{ session('error') }}
+                                        </div>
+                                        @endif
+                                        
                                         <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
                                             <a class="small" href="password.html">Forgot Password?</a>
                                             <button class="btn btn-primary" type="submit">Iniciar sesión</button>

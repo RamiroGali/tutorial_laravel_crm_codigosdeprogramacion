@@ -57,3 +57,9 @@
 gh auth login;
 gh create tutorial_laravel_crm_codigosdeprogramacion --public --source=. --remote=origin --push
 ```
+
+## Comnados
+### Mostrar la listas de rutas usadas en el proyecto y sus métodos
+```batch
+php artisan route:list
+```

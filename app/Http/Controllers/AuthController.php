@@ -17,11 +17,21 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
+        // Proceso de autenticación de credenciales ingresadas
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->intended('dashboard');
         } else {
-            return back()->withErrors(['error' => 'Credenciales incorrectas']);
+            return back()->with('error', 'Credenciales incorrectas');
         }
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->intended('/');
     }
 }
