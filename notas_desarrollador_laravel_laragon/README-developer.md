@@ -58,8 +58,43 @@ gh auth login;
 gh create tutorial_laravel_crm_codigosdeprogramacion --public --source=. --remote=origin --push
 ```
 
-## Comnados
+## Comandos
 ### Mostrar la listas de rutas usadas en el proyecto y sus métodos
 ```batch
 php artisan route:list
+```
+
+### Crear modelo, controller y los recursos con artisan
+Usar un nombre del modelo en singular
+```batch
+php artisan make:model [nombre_modelo] -mcr
+```
+
+### Solucionar problemas con la migración:
+Si los archivos xxxx_xx_xx_xxxxxx_create_[nombre_modelo]_table.php aparece como Ran, entonces los cambios que editaste después no se aplicaron.
+```batch
+php artisan migrate:status
+```
+
+#### Solución A: Reaplicar desde cero (destruye tablas):
+```batch
+php artisan migrate:fresh
+# (opcional si usas seeders)
+php artisan db:seed
+```
+#### Opción B — Rollback sólo lo necesario y volver a migrar:
+Asegúrate de hacer el rollback con la misma cantidad de pasos que necesitas para llegar a la migración que modificaste.
+```batch
+php artisan migrate:rollback --step=1
+php artisan migrate
+```
+
+#### Opción C — Crear una migración para ALTER TABLE
+Si no quieres borrar datos:
+```batch
+php artisan make:migration alter_clients_add_missing_columns --table=clients
+```
+Luego, en esa nueva migración, agregas/ajustas columnas o llaves foráneas con Schema::table('clients', ...). Ejecutas con:
+```batch
+php artisan migrate
 ```

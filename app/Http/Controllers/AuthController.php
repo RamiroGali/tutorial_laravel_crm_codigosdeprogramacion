@@ -30,7 +30,11 @@ class AuthController extends Controller
     {
         Auth::logout();
         $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // regenerar toda la sesión del formulario en el "@csrf"
+        $request->session()->regenerate();
+        
+        // regenerar solo el Token en la sesión del formulario en el "@csrf"
+        // $request->session()->regenerateToken();
 
         return redirect()->intended('/');
     }

@@ -45,4 +45,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    
+    // Función que servirá para generar la relación con el modelo "Client"
+    public function clients(){
+        // Los usuarios pueden acceder a muchos clientes asignados
+        // Pero los clientes solo se relacionarán con un solo usuario
+        return $this->hasMany(Client::class, 'user_id');
+    }
 }
