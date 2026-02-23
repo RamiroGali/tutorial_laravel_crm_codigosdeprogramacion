@@ -27,4 +27,10 @@ class Client extends Model
         // El usuario puede tener una relación con muchos clientes
         return $this->belongsTo(User::class);
     }
+
+    public function contacts()
+    {
+        // Añade los contacts a cada uno de los clientes
+        return $this->hasMany(Contact::class);
+    }
 }

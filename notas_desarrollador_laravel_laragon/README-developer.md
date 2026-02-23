@@ -98,3 +98,26 @@ Luego, en esa nueva migración, agregas/ajustas columnas o llaves foráneas con 
 ```batch
 php artisan migrate
 ```
+
+## Cambiar idioma con laravel
+Genera una carpeta lang en el proyecto que contiene las traducciones de todos los mensajes que se generan automáticamente.
+```batch
+composer require laravel-lang/lang
+php artisan lang:add es  
+```
+Se debe cofnigurar el .env con:
+```env
+APP_LOCALE=es
+APP_FALLBACK_LOCALE=es
+APP_FAKER_LOCALE=en_US
+```
+## Añadir models y controladores con recursos de 'Contact'
+```batch
+php artisan make:model Contact -mcr
+```
+Se añadieron todos los parámetros de un Contacto al archivo "C:\laragon\www\tutorial_laravel_crm_codigosdeprogramacion\database\migrations\2026_02_18_205352_create_contacts_table.php"
+Luego se ejecuta el comando para iniciar la migración
+```batch
+php artisan migrate
+```
+

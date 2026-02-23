@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,13 @@ Route::middleware(['auth'])->group(function () {
 
 	// Permitir la carga de las rutas para Clients
 	Route::resource('clients', ClientController::class);
+
+	Route::prefix('clients/{client}')->name('clients.contacts.')->group(function () {
+		Route::post('/', [ContactController::class, 'store'])->name('store');
+		Route::get('{contact}/edit', [ContactController::class, 'edit'])->name('edit');
+		Route::put('{contact}', [ContactController::class, 'update'])->name('update');
+		Route::delete('{contact}', [ContactController::class, 'destroy'])->name('destroy');
+	});
 });
 
 // Redirige la raíz a /login
